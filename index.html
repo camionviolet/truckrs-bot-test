@@ -23,27 +23,33 @@
 <body>
   <h1>Landing de test – Bot Truckrs</h1>
 
-  <!-- === SNIPPET CRISP : remplace « VOTRE_ID_ICI » par le CRISP_WEBSITE_ID du site Truckrs-test === -->
+  <!-- === SNIPPET CRISP : déclenche le scénario ‘auto-start’ et supprime le greeting par défaut === -->
   <script>
+    /* 0 | variables globales requises par Crisp */
     window.$crisp = [];
-    window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";   // ← remplace cette valeur
+    window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
 
-    /* 1️⃣  En phase de test : nouvelle conversation à chaque F5 */
-    $crisp.push(["do","session:reset"]);
+    /* 1 | (DEV seulement) : nouvelle session à chaque F5.
+         Retire cette ligne en production pour conserver l’historique visiteurs. */
+    $crisp.push(["do", "session:reset"]);
 
-    /* 2️⃣  Quand le widget est chargé… */
-    $crisp.push(["on","widget:loaded", () => {
-      $crisp.push(["do","chat:open"]);                     // optionnel : retire si tu ne veux pas l’ouverture auto
-      $crisp.push(["set","session:event",["auto-start"]]); // déclenche le scénario IA
-      $crisp.push(["do","chat:pop"]);                      // enlève le message d’accueil générique
+    /* 2 | définition d’un e-mail (obligatoire pour qu’un Event soit accepté) */
+    const uid = Date.now();   // identifiant unique à la volée
+    $crisp.push(["set", "user:email", [ `anon+${uid}@truckrs.test` ]]);
+
+    /* 3 | actions lorsque le widget est chargé */
+    $crisp.push(["on", "widget:loaded", () => {
+      $crisp.push(["do",  "chat:open"]);                 // ouvre la boîte (optionnel)
+      $crisp.push(["set", "session:event", ["auto-start"]]); // 🔔 déclenche le bloc Event
+      $crisp.push(["do",  "chat:pop"]);                  // supprime le greeting natif
     }]);
 
-    /* 3️⃣  Charge le script Crisp (ne pas modifier l’URL) */
+    /* 4 | chargement du SDK Crisp (ne pas modifier l’URL) */
     (function () {
-      const d = document, s = d.createElement("script");
-      s.src = "https://client.crisp.chat/l.js";
+      const s = document.createElement("script");
+      s.src  = "https://client.crisp.chat/l.js";
       s.async = 1;
-      d.head.appendChild(s);
+      document.head.appendChild(s);
     })();
   </script>
 </body>
