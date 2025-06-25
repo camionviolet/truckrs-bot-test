@@ -1,35 +1,34 @@
-<!-- === SNIPPET CRISP : déclenche le bot + retire le greeting === -->
 <script>
+  /* — 0. variables Crisp — */
   window.$crisp = [];
   window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
-  window.CRISP_DEBUG = 1;                /* logs verbeux pour tes tests */
+  window.CRISP_DEBUG = 1;        /* affiche tous les logs */
 
-  /* DEV : nouvelle session à chaque F5 (retire cette ligne en prod) */
+  /* DEV : session neuve à chaque F5 (retire-la en prod) */
   $crisp.push(["do","session:reset"]);
 
-  /* 1️⃣  e-mail obligatoire pour l'event --------- */
+  /* — 1. e-mail générique (obligatoire pour l’event) — */
   $crisp.push(["set","user:email",["titouan.martineau@truckrs.co"]]);
 
-  /* 2️⃣  quand le widget est chargé -------------- */
+  /* — 2. quand le widget est prêt — */
   $crisp.push(["on","widget:loaded", () => {
-    $crisp.push(["do","chat:open"]);                 /* ouvre la boîte */
-    $crisp.push(["set","session:event",["auto-start"]]);   /* déclenche le Bot */
+    $crisp.push(["do","chat:open"]);                     // ouvre la boîte
+    $crisp.push(["set","session:event",["auto-start"]]); // déclenche le scénario
   }]);
 
-  /* 3️⃣  on supprime le greeting dès sa réception */
-  let greetingRemoved = false;
-  $crisp.push(["on","message:received", (m) => {
-    if (!greetingRemoved && m.from === "operator") {
-      greetingRemoved = true;
-      $crisp.push(["do","chat:pop"]);                /* efface “Des questions…” */
+  /* — 3. supprime le greeting natif dès qu’il apparaît — */
+  let done=false;
+  $crisp.push(["on","message:received",(m)=>{
+    if(!done && m.from==="operator"){        // c’est le greeting
+      done=true;
+      $crisp.push(["do","chat:pop"]);        // on l’efface
     }
   }]);
 
-  /* 4️⃣  charge le SDK Crisp --------------------- */
+  /* — 4. charge le SDK Crisp — */
   (function () {
-    const s = document.createElement("script");
-    s.src  = "https://client.crisp.chat/l.js";
-    s.async = 1;
+    const s=document.createElement("script");
+    s.src="https://client.crisp.chat/l.js"; s.async=1;
     document.head.appendChild(s);
   })();
 </script>
