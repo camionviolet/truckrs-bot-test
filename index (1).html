@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Test Bot Truckrs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Empêche l'indexation par les moteurs -->
+  <meta name="robots" content="noindex" />
+  <style>
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      margin:0;
+      background:#f7f7f7;
+    }
+    h1{font-size:1.8rem;color:#333;}
+  </style>
+</head>
+<body>
+  <h1>Landing de test – Bot Truckrs</h1>
+
+  <!-- === SNIPPET CRISP : remplacez `TON_ID_TEST` par votre CRISP_WEBSITE_ID === -->
+  <script>
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = "TON_ID_TEST";   // ← Mettre ici l'ID du site “Truckrs‑test”
+
+    /* 1️⃣  Option de test : on repart d'une session vierge à chaque F5 */
+    $crisp.push(["do", "session:reset"]);
+
+    /* 2️⃣  Quand le widget est prêt */
+    $crisp.push(["on", "widget:loaded", () => {
+      /* (facultatif) ouvrir la bulle immédiatement */
+      $crisp.push(["do", "chat:open"]);
+
+      /* 3️⃣  Déclencher le scénario IA via l'événement 'auto-start' */
+      $crisp.push(["set","session:event",["auto-start"]]);
+
+      /* 4️⃣  Supprimer le message de bienvenue générique */
+      $crisp.push(["do","chat:pop"]);
+    }]);
+
+    /* 5️⃣  Charger le script Crisp (à ne pas modifier) */
+    (function () {
+      const d = document, s = d.createElement("script");
+      s.src = "https://client.crisp.chat/l.js";
+      s.async = 1;
+      d.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
