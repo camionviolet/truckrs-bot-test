@@ -1,35 +1,35 @@
 <script>
-  /* 0 | variables globales requises par Crisp */
   window.$crisp = [];
   window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
+  window.CRISP_DEBUG = 1;                 // logs verbeux
 
-  /* 1 | (DEV seulement) : session neuve à chaque F5 — retire cette ligne en prod */
-  $crisp.push(["do", "session:reset"]);
+  /* 👇 ligne DEV à retirer en prod */
+  $crisp.push(["do","session:reset"]);
 
-  /* 2 | e-mail “par défaut” : nécessaire pour que Crisp accepte un session:event */
-  const uid = Date.now();                                   // identifiant unique
-  $crisp.push(["set", "user:email", [`anon+${uid}@truckrs.test`]]);
+  /* e-mail générique AVANT l’event */
+  $crisp.push(["set","user:email",["anon+"+Date.now()+"@truckrs.test"]]);
 
-  /* 3 | quand le widget est prêt : on ouvre le chat + on pousse l’évent auto-start */
-  $crisp.push(["on", "widget:loaded", () => {
-    $crisp.push(["do",  "chat:open"]);                      // ouverture automatique
-    $crisp.push(["set", "session:event", ["auto-start"]]);  // déclenche le bloc Event
+  /* Quand le widget est vraiment prêt… */
+  $crisp.push(["on","widget:loaded", () => {
+
+    /* 1. on ouvre la boîte */
+    $crisp.push(["do","chat:open"]);
+
+    /* 2. on pousse EXACTEMENT cette forme (pas d’objet vide) */
+    $crisp.push(["set","session:event",["auto-start"]]);
+
+    /* 3. on supprime le greeting dès qu’il arrive */
+    let done = false;
+    $crisp.push(["on","message:received",(m)=>{
+      if(!done && m.from==="operator"){
+        done = true;
+        $crisp.push(["do","chat:pop"]);
+      }
+    }]);
   }]);
 
-  /* 4 | dès qu’un message opérateur arrive → on retire le greeting natif une seule fois */
-  let greetingRemoved = false;
-  $crisp.push(["on", "message:received", (msg) => {
-    if (!greetingRemoved && msg.from === "operator") {
-      greetingRemoved = true;
-      $crisp.push(["do", "chat:pop"]);                      // supprime « Des questions en tête… »
-    }
-  }]);
-
-  /* 5 | charge le SDK Crisp (ne pas modifier l’URL) */
-  (function () {
-    const s = document.createElement("script");
-    s.src  = "https://client.crisp.chat/l.js";
-    s.async = 1;
+  (function(){const s=document.createElement("script");
+    s.src="https://client.crisp.chat/l.js"; s.async=1;
     document.head.appendChild(s);
   })();
 </script>
