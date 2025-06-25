@@ -1,56 +1,35 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <title>Test Bot Truckrs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Empêche l’indexation par les moteurs -->
-  <meta name="robots" content="noindex" />
-  <style>
-    body{
-      font-family: Arial, Helvetica, sans-serif;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height:100vh;
-      margin:0;
-      background:#f7f7f7;
+<script>
+  /* 0 | variables globales requises par Crisp */
+  window.$crisp = [];
+  window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
+
+  /* 1 | (DEV seulement) : session neuve à chaque F5 — retire cette ligne en prod */
+  $crisp.push(["do", "session:reset"]);
+
+  /* 2 | e-mail “par défaut” : nécessaire pour que Crisp accepte un session:event */
+  const uid = Date.now();                                   // identifiant unique
+  $crisp.push(["set", "user:email", [`anon+${uid}@truckrs.test`]]);
+
+  /* 3 | quand le widget est prêt : on ouvre le chat + on pousse l’évent auto-start */
+  $crisp.push(["on", "widget:loaded", () => {
+    $crisp.push(["do",  "chat:open"]);                      // ouverture automatique
+    $crisp.push(["set", "session:event", ["auto-start"]]);  // déclenche le bloc Event
+  }]);
+
+  /* 4 | dès qu’un message opérateur arrive → on retire le greeting natif une seule fois */
+  let greetingRemoved = false;
+  $crisp.push(["on", "message:received", (msg) => {
+    if (!greetingRemoved && msg.from === "operator") {
+      greetingRemoved = true;
+      $crisp.push(["do", "chat:pop"]);                      // supprime « Des questions en tête… »
     }
-    h1{font-size:1.8rem;color:#333;}
-  </style>
-</head>
+  }]);
 
-<body>
-  <h1>Landing de test – Bot Truckrs</h1>
-
-  <!-- === SNIPPET CRISP : déclenche le scénario ‘auto-start’ et supprime le greeting par défaut === -->
-  <script>
-    /* 0 | variables globales requises par Crisp */
-    window.$crisp = [];
-    window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
-
-    /* 1 | (DEV seulement) : nouvelle session à chaque F5.
-         Retire cette ligne en production pour conserver l’historique visiteurs. */
-    $crisp.push(["do", "session:reset"]);
-
-    /* 2 | définition d’un e-mail (obligatoire pour qu’un Event soit accepté) */
-    const uid = Date.now();   // identifiant unique à la volée
-    $crisp.push(["set", "user:email", [ `anon+${uid}@truckrs.test` ]]);
-
-    /* 3 | actions lorsque le widget est chargé */
-    $crisp.push(["on", "widget:loaded", () => {
-      $crisp.push(["do",  "chat:open"]);                 // ouvre la boîte (optionnel)
-      $crisp.push(["set", "session:event", ["auto-start"]]); // 🔔 déclenche le bloc Event
-      $crisp.push(["do",  "chat:pop"]);                  // supprime le greeting natif
-    }]);
-
-    /* 4 | chargement du SDK Crisp (ne pas modifier l’URL) */
-    (function () {
-      const s = document.createElement("script");
-      s.src  = "https://client.crisp.chat/l.js";
-      s.async = 1;
-      document.head.appendChild(s);
-    })();
-  </script>
-</body>
-</html>
+  /* 5 | charge le SDK Crisp (ne pas modifier l’URL) */
+  (function () {
+    const s = document.createElement("script");
+    s.src  = "https://client.crisp.chat/l.js";
+    s.async = 1;
+    document.head.appendChild(s);
+  })();
+</script>
