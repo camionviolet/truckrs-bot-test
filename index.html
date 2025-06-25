@@ -1,34 +1,98 @@
-<script>
-  /* — 0. variables Crisp — */
-  window.$crisp = [];
-  window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
-  window.CRISP_DEBUG = 1;        /* affiche tous les logs */
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>TruckrsBot – Page de test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
 
-  /* DEV : session neuve à chaque F5 (retire-la en prod) */
-  $crisp.push(["do","session:reset"]);
-
-  /* — 1. e-mail générique (obligatoire pour l’event) — */
-  $crisp.push(["set","user:email",["titouan.martineau@truckrs.co"]]);
-
-  /* — 2. quand le widget est prêt — */
-  $crisp.push(["on","widget:loaded", () => {
-    $crisp.push(["do","chat:open"]);                     // ouvre la boîte
-    $crisp.push(["set","session:event",["auto-start"]]); // déclenche le scénario
-  }]);
-
-  /* — 3. supprime le greeting natif dès qu’il apparaît — */
-  let done=false;
-  $crisp.push(["on","message:received",(m)=>{
-    if(!done && m.from==="operator"){        // c’est le greeting
-      done=true;
-      $crisp.push(["do","chat:pop"]);        // on l’efface
+  <!-- —— DESIGN —— -->
+  <style>
+    /* 1 | palette Truckrs (violet + bleu) */
+    :root {
+      --violet: #5B2CFF;
+      --bleu:   #0076FF;
+      --gris:   #f5f6fa;
+      --ombre:  rgba(0,0,0,.08);
     }
-  }]);
 
-  /* — 4. charge le SDK Crisp — */
-  (function () {
-    const s=document.createElement("script");
-    s.src="https://client.crisp.chat/l.js"; s.async=1;
-    document.head.appendChild(s);
-  })();
-</script>
+    /* 2 | Mise en page plein écran */
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: "Inter", Arial, sans-serif;
+      background: linear-gradient(135deg,var(--violet) 0%,var(--bleu) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* 3 | Carte centrale */
+    .card{
+      background:#fff;
+      padding:2.5rem 3rem;
+      border-radius:1.5rem;
+      box-shadow:0 12px 24px var(--ombre);
+      text-align:center;
+      max-width:420px;
+      width:90%;
+    }
+
+    .card img{
+      width:64px;
+      height:64px;
+      margin-bottom:1rem;
+    }
+
+    h1{
+      margin:0;
+      font-size:1.75rem;
+      color:var(--violet);
+    }
+
+    p{
+      color:#555;
+      margin:0.75rem 0 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- —— CONTENU VISUEL —— -->
+  <div class="card">
+    <!-- Place ton logo (SVG/PNG) si tu veux -->
+    <!-- <img src="logo-truckrs.svg" alt="Truckrs logo"> -->
+    <h1>TruckrsBot – Test</h1>
+    <p>Cette page déclenche automatiquement le scénario <strong>auto-start</strong>.</p>
+    <p>Ouvre le chat et observe !</p>
+  </div>
+
+  <!-- —— SNIPPET CRISP —— -->
+  <script>
+    /* 0. Variables Crisp */
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
+
+    /* 1. Adresse e-mail générique (obligatoire pour l’event) */
+    $crisp.push(["set","user:email",["titouan.martineau@truckrs.co"]]);
+
+    /* 2. Au chargement du widget : ouvre le chat + pousse l’event */
+    $crisp.push(["on","widget:loaded", () => {
+      $crisp.push(["do","chat:open"]);
+      $crisp.push(["set","session:event",["auto-start"]]);
+
+      /* 3. Supprime le greeting natif après son affichage */
+      setTimeout(() => $crisp.push(["do","chat:pop"]), 800);
+    }]);
+
+    /* 4. Charge le SDK Crisp */
+    (function () {
+      const s=document.createElement("script");
+      s.src="https://client.crisp.chat/l.js";
+      s.async=1;
+      document.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
