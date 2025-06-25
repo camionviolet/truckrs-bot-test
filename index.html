@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Test Bot Truckrs</title>
+  <!-- Empêche l'indexation par les moteurs de recherche -->
+  <meta name="robots" content="noindex" />
+  <style>
+    body{
+      font-family: Arial, Helvetica, sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      margin:0;
+      background:#f7f7f7;
+    }
+    h1{font-size:1.8rem;color:#333;}
+  </style>
+</head>
+<body>
+  <h1>Landing de test – Bot Truckrs</h1>
+
+  <!-- Script Crisp : remplacez TON_ID_TRUCKRS par votre vrai CRISP_WEBSITE_ID -->
+  <script>
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = "TON_ID_TRUCKRS";  // <-- Remplacez cette valeur !
+
+    /* 1️⃣ Réinitialise la conversation à chaque chargement (pratique pour les tests) */
+    $crisp.push(["do", "session:reset"]);
+
+    /* 2️⃣ Ouvre la bulle et pousse l'événement auto‑start quand le widget est prêt */
+    $crisp.push(["on", "widget:loaded", () => {
+      $crisp.push(["do","chat:open"]);                 // Enlevez cette ligne si vous ne voulez pas l'ouverture auto
+      $crisp.push(["set","session:event",["auto-start"]]); // Doit correspondre au nom du bloc New Crisp Event
+    }]);
+
+    /* 3️⃣ Charge le script Crisp (ne pas modifier) */
+    (function () {
+      const d = document, s = d.createElement("script");
+      s.src = "https://client.crisp.chat/l.js";
+      s.async = 1;
+      d.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
