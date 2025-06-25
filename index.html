@@ -68,31 +68,36 @@
     <p>Ouvre le chat et observe !</p>
   </div>
 
-  <!-- —— SNIPPET CRISP —— -->
-  <script>
-    /* 0. Variables Crisp */
-    window.$crisp = [];
-    window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
+<script> 
+  /* 0. Crisp globals */
+  window.$crisp = [];
+  window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
 
-    /* 1. Adresse e-mail générique (obligatoire pour l’event) */
-    $crisp.push(["set","user:email",["titouan.martineau@truckrs.co"]]);
+  /* DEV : toujours repartir de zéro */
+  $crisp.push(["do","session:reset"]);    // ⬅️  retire-le en production
 
-    /* 2. Au chargement du widget : ouvre le chat + pousse l’event */
-    $crisp.push(["on","widget:loaded", () => {
-      $crisp.push(["do","chat:open"]);
-      $crisp.push(["set","session:event",["auto-start"]]);
+  /* 1. e-mail générique requis pour l’event */
+  $crisp.push(["set","user:email",["titouan.martineau@truckrs.co"]]);
 
-      /* 3. Supprime le greeting natif après son affichage */
-      setTimeout(() => $crisp.push(["do","chat:pop"]), 800);
+  /* 2. Quand l’utilisateur ouvre le chat */
+  $crisp.push(["on","chat:initiated", () => {
+    /* déclenche ton bloc Event */
+    $crisp.push(["set","session:event",["auto-start"]]);
+
+    /* supprime le greeting dès qu’il arrive */
+    let cleaned = false;
+    $crisp.push(["on","message:received",(m)=>{
+      if(!cleaned && m.from==="operator"){
+        cleaned = true;
+        $crisp.push(["do","chat:pop"]);
+      }
     }]);
+  }]);
 
-    /* 4. Charge le SDK Crisp */
-    (function () {
-      const s=document.createElement("script");
-      s.src="https://client.crisp.chat/l.js";
-      s.async=1;
-      document.head.appendChild(s);
-    })();
-  </script>
-</body>
-</html>
+  /* 3. Charger le SDK */
+  (function(){
+    const s=document.createElement("script");
+    s.src="https://client.crisp.chat/l.js"; s.async=1;
+    document.head.appendChild(s);
+  })();
+</script>
