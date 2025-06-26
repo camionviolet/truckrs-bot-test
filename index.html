@@ -8,7 +8,6 @@
 
   <!-- —— DESIGN —— -->
   <style>
-    /* 1 | palette Truckrs (violet + bleu) */
     :root {
       --violet: #5B2CFF;
       --bleu:   #0076FF;
@@ -16,18 +15,19 @@
       --ombre:  rgba(0,0,0,.08);
     }
 
-    /* 2 | Mise en page plein écran */
     html,body{
       height:100%;
       margin:0;
       font-family: "Inter", Arial, sans-serif;
       background: linear-gradient(135deg,var(--violet) 0%,var(--bleu) 100%);
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
     }
 
-    /* 3 | Carte centrale */
     .card{
       background:#fff;
       padding:2.5rem 3rem;
@@ -36,6 +36,7 @@
       text-align:center;
       max-width:420px;
       width:90%;
+      margin-bottom:2rem;
     }
 
     .card img{
@@ -54,57 +55,65 @@
       color:#555;
       margin:0.75rem 0 0;
     }
+
+    .map-container {
+      width: 90%;
+      max-width: 960px;
+      height: 480px;
+      border-radius: 1rem;
+      box-shadow: 0 12px 24px var(--ombre);
+      overflow: hidden;
+    }
+
+    .map-container iframe {
+      border: 0;
+      width: 100%;
+      height: 100%;
+      filter: grayscale(10%) brightness(1.1) contrast(1.05);
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- —— CONTENU VISUEL —— -->
   <div class="card">
-    <!-- Place ton logo (SVG/PNG) si tu veux -->
-    <!-- <img src="logo-truckrs.svg" alt="Truckrs logo"> -->
     <h1>TruckrsBot – Test</h1>
     <p>Cette page déclenche automatiquement le scénario <strong>auto-start</strong>.</p>
     <p>Ouvre le chat et observe !</p>
   </div>
-  <iframe
-  src="https://www.google.fr/maps/d/embed?mid=1Shg8mHrOucplRqpKYEjVIX7ZKC6NTCc&ehbc=2E312F&noprof=1"
-  width="640"
-  height="480"
-  style="border:0; width: 100%; max-width: 100%; height: 480px;"
-  allowfullscreen
-  loading="lazy"
-></iframe>
 
-<script>
-  /* 0 — Crisp globals */
-  window.$crisp = [];
-  window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
+  <div class="map-container">
+    <iframe
+      src="https://www.google.fr/maps/d/u/0/embed?mid=1Shg8mHrOucplRqpKYEjVIX7ZKC6NTCc&ehbc=2E312F&noprof=1"
+      allowfullscreen
+      loading="lazy"
+    ></iframe>
+  </div>
 
-  /* DEV : toujours repartir de zéro (retire cette ligne en production) */
-  $crisp.push(["do","session:reset"]);
+  <script>
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = "3a15c95d-edf5-428a-9c7d-f4251295183c";
 
-  /* 1 — Quand l’utilisateur ouvre le chat pour la première fois */
-  $crisp.push(["on","chat:initiated", () => {
+    $crisp.push(["do","session:reset"]);
 
-    /* a)  listener : supprime la bulle greeting dès qu’elle arrive */
-    let popped = false;
-    $crisp.push(["on","message:received", (m) => {
-      if (!popped && m.from === "operator") {
-        popped = true;
-        $crisp.push(["do","chat:pop"]);          // efface « Des questions… »
-      }
+    $crisp.push(["on","chat:initiated", () => {
+      let popped = false;
+      $crisp.push(["on","message:received", (m) => {
+        if (!popped && m.from === "operator") {
+          popped = true;
+          $crisp.push(["do","chat:pop"]);
+        }
+      }]);
+      $crisp.push(["do","message:send", ["text", "__auto__"]]);
     }]);
 
-    /* b)  message “fantôme” qui déclenche ton bloc RegEx ^__auto__$ */
-    $crisp.push(["do","message:send", ["text", "__auto__"]]);
-  }]);
+    (function () {
+      const s = document.createElement("script");
+      s.src = "https://client.crisp.chat/l.js";
+      s.async = 1;
+      document.head.appendChild(s);
+    })();
+  </script>
 
-  /* 2 — Charger le SDK Crisp */
-  (function () {
-    const s = document.createElement("script");
-    s.src = "https://client.crisp.chat/l.js";
-    s.async = 1;
-    document.head.appendChild(s);
-  })();
-</script>
+</body>
+</html>
